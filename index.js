@@ -7,7 +7,7 @@ let curHeight = 240;
 let isCaptureMode = false;
 let dim;
 
-function setup() {
+async function setup() {
 //  dim = (windowHeight < windowWidth) ? windowHeight : windowWidth;
   dim = (displayHeight < displayWidth) ? displayHeight : displayWidth;
 
@@ -20,6 +20,9 @@ function setup() {
       facingMode: "environment"
     }
   });
+
+window.myCanvas = myCanvas;
+window.capture = capture;
 
   capture.size(dim, dim);
 
@@ -37,6 +40,7 @@ function setup() {
 }
 
 let currentCapture;
+
 let handleClick = function() {
   if(isCaptureMode === true) {
     isCaptureMode = false;
@@ -60,14 +64,16 @@ let handleClick = function() {
 
       if(isModelLoaded === true) {
         classifier.predict(img, (err, results) => {
+console.log("classifier.predict", results);
+
           if(err) { console.error(err); }
           else {
             fill(255);
             stroke(0);
             strokeWeight(4);
             textSize(24);
-            text(results[0].className, 10, height - 100, width - 10, height - 200);
-            results.forEach( result => console.log(`${result.className}:`, result.probability) );
+            text(results[0].label, 10, height - 100, width - 10, height - 200);
+            results.forEach( result => console.log(`${result.label}:`, result.confidence) );
           }
           img.remove();
         });
@@ -75,7 +81,7 @@ let handleClick = function() {
       }
     });
   }
-}
+};
 
 function mouseReleased() {
   handleClick();
